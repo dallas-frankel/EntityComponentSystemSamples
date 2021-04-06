@@ -238,8 +238,15 @@ public class BallMoveScript : ComponentSystem
         int count = 0;
         Entities.ForEach((ref PhysicsVelocity physicsVelocity, ref Translation position, ref Rotation rotation) =>
         {
-            physicsVelocity.Linear.x = 5f;
-            position.Value.x = position.Value.x + 2;
+            if (rotation.Value.value.w == 1f)
+            {
+                physicsVelocity.Linear.x = 5f;
+                
+            }
+            else
+            {
+                physicsVelocity.Linear.y = 5f;
+            }
             count++;
         });
   /*      positions = new float3[count];
