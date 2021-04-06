@@ -27,8 +27,8 @@ public class MonoBehaviourRollBacker : MonoBehaviour
         {
             Debug.Log("MonoBehaviour setting Back");
             done = true;
-           // ECSRollBacker.shouldRollBack = true;
-            //ECSRollBacker.rollBackInt = 50;
+            ECSRollBacker.shouldRollBack = true;
+            ECSRollBacker.rollBackInt = 50;
         }
     }
 

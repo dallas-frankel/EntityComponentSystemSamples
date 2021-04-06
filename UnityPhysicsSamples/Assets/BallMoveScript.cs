@@ -245,7 +245,7 @@ public class BallMoveScript : ComponentSystem
             }
             else
             {
-                physicsVelocity.Linear.y = 5f;
+               // physicsVelocity.Linear.y = 5f;
             }
             count++;
         });

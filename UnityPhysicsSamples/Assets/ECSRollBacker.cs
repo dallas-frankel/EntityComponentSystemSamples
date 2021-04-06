@@ -24,8 +24,8 @@ public class ECSRollBacker : ComponentSystem
         Debug.Log("Started Running");
         myWorld = World;
 
-        positions = new List<List<float3>>();
-        velocities = new List<List<float3>>();
+        positions = new List<float3>();
+        velocities = new List<float3>();
         positions2 = new List<List<float3>>();
         velocities2 = new List<List<float3>>();
 
@@ -77,53 +77,32 @@ public class ECSRollBacker : ComponentSystem
 
     public void ChangeBallVelocity(float3 velocity)
     {
-        Entities.ForEach((ref PhysicsVelocity physicsVelocity, ref Translation position, ref Rotation rotation) =>
-        {
-            Debug.Log("Ball Vel changed to " + velocity);
-            physicsVelocity.Linear = velocity;
-        });
+        ballVel.Linear = velocity;
     }
 
     public void setToTick(int tick)
     {
-        int count = 0;
-        Entities.ForEach((ref PhysicsVelocity physicsVelocity, ref Translation position, ref Rotation rotation) =>
-        {
-            position.Value = positions[tick][count];
-            physicsVelocity.Linear = velocities[tick][count];
-            count++;
-            Debug.Log("Set position to " + position.Value);
-            rollBackPosition = new Vector3(position.Value.x, position.Value.y, position.Value.z);
-        });
-
-        MonoBehaviourRollBacker.singleton.UpdateXTimes();
+        Debug.Log("Setting back to " + positions[tick]);
+        ballPos.Value = positions[tick];
+        ballVel.Linear = velocities[tick];
+        //MonoBehaviourRollBacker.singleton.UpdateXTimes();
     }
 
-    public static List<List<float3>> velocities = new List<List<float3>>();
-    public static List<List<float3>> positions = new List<List<float3>>();
+    public static List<float3> velocities = new List<float3>();
+    public static List<float3> positions = new List<float3>();
 
     public static float3 velocityToAdd;
 
     public void saveVelocity()
     {
-        List<float3> velocityList = new List<float3>();
-        Entities.ForEach((ref PhysicsVelocity physicsVelocity) =>
-        {
-            velocityList.Add(physicsVelocity.Linear);
-        });
-        velocities.Add(velocityList);
+        velocities.Add(ballVel.Linear);
     }
 
     public event EventHandler RolledBack;
     public void savePosition()
     {
-        List<float3> positionList = new List<float3>();
-        Entities.ForEach((ref Translation position) =>
-        {
-            positionList.Add(position.Value);
-            Debug.Log(position.Value + " " + positions.Count);
-        });
-        positions.Add(positionList);
+        positions.Add(ballPos.Value);
+        Debug.Log("Saving " + positions.Count + " " + ballPos.Value);
     }
 
 
