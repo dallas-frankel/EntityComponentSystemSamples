@@ -1,4 +1,4 @@
-﻿/*using UnityEngine;
+﻿using UnityEngine;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
@@ -8,13 +8,14 @@ using Unity.Physics.Systems;
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 public class RollBacker : ComponentSystem
 {
-    //public List<PhysicsWorld> pastWorldInstances = new List<PhysicsWorld>();
+    public List<PhysicsWorld> pastWorldInstances = new List<PhysicsWorld>();
+    BuildPhysicsWorld m_BuildPhysicsWorld;
 
     World defaultWorld;
     World predictiveWorld;
     protected override void OnStartRunning()
     {
-     //   m_BuildPhysicsWorld = World.GetOrCreateSystem<BuildPhysicsWorld>();
+        m_BuildPhysicsWorld = World.GetOrCreateSystem<BuildPhysicsWorld>();
 
         defaultWorld = World;
 
@@ -26,45 +27,32 @@ public class RollBacker : ComponentSystem
 
         FixedStepSimulationSystemGroup fixGroup = predictiveWorld.GetExistingSystem<FixedStepSimulationSystemGroup>();
         fixGroup.FixedRateManager = new FixedRateUtils.FixedRateSimpleManager(Time.DeltaTime);
-
-        for (int i = 0; i < 5;i++)
-        {
-            //UpdateOnce();
-        }
     }
-
     protected override void OnUpdate()
     {
-      //  Debug.Log("Update ball position " + GetBallPosition());
-       // Debug.Log("Tick " + pastWorldInstances.Count + " ball position is" + GetBallPosition());
-        //pastWorldInstances.Add(m_BuildPhysicsWorld.PhysicsWorld.Clone());
+        Debug.Log("Tick " + pastWorldInstances.Count + " ball position is" + GetBallPosition());
+        pastWorldInstances.Add(m_BuildPhysicsWorld.PhysicsWorld.Clone());
           
-     //   if (pastWorldInstances.Count == 10)
-      //  {
-           // RollBackTo(5);
-       // }
+        if (pastWorldInstances.Count == 10)
+        {
+            RollBackTo(5);
+        }
     }
 
     void UpdateOnce()
     {
-        World.Update();
-        Debug.Log("Simulated " + GetBallPosition());
+        locECSWorld.Update();
     }
 
     void RollBackTo(int tickNum)
     {
-   *//*     Debug.Log("Changing world back to tick " + tickNum);
+        Debug.Log("Changing world back to tick " + tickNum);
         //Changes current physicsworld
-      //  ChangeWorld(predictiveWorld,defaultWorld);
+        ChangePhysicsWorld(pastWorldInstances[tickNum]);
         
         Debug.Log("BallPostion after world change " + GetBallPosition());
         //Steps the physics until catches up to current tick
-       // StepWorldXTimes(pastWorldInstances.Count - tickNum);
-
-        for (int i = 0; i < pastWorldInstances.Count;i++)
-        {
-            UpdateOnce();
-        }*//*
+        StepWorldXTimes(pastWorldInstances.Count - tickNum);
     }
 
     private SimulationContext SimulationContext;
@@ -74,7 +62,7 @@ public class RollBacker : ComponentSystem
 
         var stepInput = new SimulationStepInput
         {
-            World = new PhysicsWorld(),
+            World = m_BuildPhysicsWorld.PhysicsWorld,
             TimeStep = Time.DeltaTime,
             NumSolverIterations = stepComponent.SolverIterationCount,
             SolverStabilizationHeuristicSettings = stepComponent.SolverStabilizationHeuristicSettings,
@@ -90,17 +78,12 @@ public class RollBacker : ComponentSystem
         }
     }
 
-    void ChangeWorld(World worldToCopyTo, World worldToCopyFrom)
+    void ChangeWorld(PhysicsWorld physicsWorld)
     {
-        worldToCopyTo.EntityManager.CopyAndReplaceEntitiesFrom(worldToCopyFrom.EntityManager);
-        worldToCopyTo.SetTime(new Unity.Core.TimeData(worldToCopyFrom.Time.ElapsedTime, worldToCopyFrom.Time.DeltaTime));
-    }
-
-    void ChangePhysicsWorld(PhysicsWorld physicsWorld)
-    {
-
+        m_BuildPhysicsWorld.PhysicsWorld = physicsWorld;
         //m_BuildPhysicsWorld.Update();
     }
+
 
     Vector3 GetBallPosition()
     {
@@ -113,4 +96,3 @@ public class RollBacker : ComponentSystem
         return pos;
     }
 }
-*/

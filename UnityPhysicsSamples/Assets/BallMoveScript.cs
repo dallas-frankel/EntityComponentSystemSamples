@@ -247,6 +247,8 @@ public class BallMoveScript : ComponentSystem
             {
                // physicsVelocity.Linear.y = 5f;
             }
+            physicsVelocity.Linear.x = 5f;
+            position.Value.x = position.Value.x + 2;
             count++;
         });
   /*      positions = new float3[count];
